@@ -76,7 +76,7 @@ public class SipClient extends JFrame implements SipListener {
         });
 
         buttonRegisterStatefull.setText("Reg (SF)");
-        buttonRegisterStatefull.setEnabled(false);
+        buttonRegisterStatefull.setEnabled(true);
         buttonRegisterStatefull.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 onRegisterStatefull(evt);
@@ -234,6 +234,54 @@ public class SipClient extends JFrame implements SipListener {
     
     private void onRegisterStatefull(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onRegisterStatefull
         // A method called when you click on the "Reg (SF)" button.
+    	try {
+    	    // Get the destination address from the text field.
+    	    Address addressTo = this.addressFactory.createAddress(this.textField.getText());
+    	    // Create the request URI for the SIP message.
+    	    javax.sip.address.URI requestURI = addressTo.getURI();
+
+    	    // Create the SIP message headers.
+
+    	    // The "Via" headers.
+    	    ArrayList viaHeaders = new ArrayList();
+    	    ViaHeader viaHeader = this.headerFactory.createViaHeader(this.ip, this.port, "udp", null);
+    	    viaHeaders.add(viaHeader);
+    	    // The "Max-Forwards" header.
+    	    MaxForwardsHeader maxForwardsHeader = this.headerFactory.createMaxForwardsHeader(70);
+    	    // The "Call-Id" header.
+    	    CallIdHeader callIdHeader = this.sipProvider.getNewCallId();
+    	    // The "CSeq" header.
+    	    CSeqHeader cSeqHeader = this.headerFactory.createCSeqHeader(1L,"REGISTER");
+    	    // The "From" header.
+    	    FromHeader fromHeader = this.headerFactory.createFromHeader(this.contactAddress, String.valueOf(this.tag));
+    	    // The "To" header.
+    	    ToHeader toHeader = this.headerFactory.createToHeader(addressTo, null);
+
+    	    // Create the REGISTER request.
+    	    Request request = this.messageFactory.createRequest(
+    	        requestURI,
+    	        "REGISTER",
+    	        callIdHeader,
+    	        cSeqHeader,
+    	        fromHeader,
+    	        toHeader,
+    	        viaHeaders,
+    	        maxForwardsHeader);
+    	    // Add the "Contact" header to the request.
+    	    request.addHeader(contactHeader);
+
+    	    ClientTransaction transaction = this.sipProvider.getNewClientTransaction(request);
+    	    // Send the request statefully, through the client transaction.
+    	    transaction.sendRequest();
+
+    	    // Display the message in the text area.
+    	    this.textArea.append(
+    	        "Request sent:\n" + request.toString() + "\n\n");
+    	}
+    	catch(Exception e) {
+    	    // If an error occurred, display the error.
+    	    this.textArea.append("Request sent failed: " + e.getMessage() + "\n");
+    	}
     }//GEN-LAST:event_onRegisterStatefull
 
     private void onInvite(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onInvite
