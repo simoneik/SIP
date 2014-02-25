@@ -255,7 +255,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     public void processTransactionTerminated(TransactionTerminatedEvent transactionTerminatedEvent) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+ 
     @Override
     public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {
         throw new UnsupportedOperationException("Not supported yet.");
