@@ -340,6 +340,9 @@ public class SipClient extends JFrame implements SipListener {
     @Override
     public void processRequest(RequestEvent requestEvent) {
         // A method called when you receive a SIP request.
+    	// when a invite is received, send 180 trying or whatever
+    	//A ringtone should commence and if the user picks up, the ringing stops and 200 ok is sent or whatever
+    	//Maybe start a timer and if the user doesnt pick up or reject incoming call, send 300 not available or whatever
     }
 
     @Override
