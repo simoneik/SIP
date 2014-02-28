@@ -6,6 +6,7 @@ package sip_server;
 
 import java.net.*;
 import java.util.*;
+
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
@@ -13,10 +14,6 @@ import javax.sip.message.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
-/**
- *
- * @author Alex
- */
 public class SipServer extends javax.swing.JFrame implements SipListener {
         
     private SipFactory sipFactory;
@@ -34,6 +31,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     private int tag = (new Random()).nextInt();
     private Address contactAddress;
     private ContactHeader contactHeader;
+    private static HashMap<String, String> users = new HashMap<String, String>(); //contains mapping of username to ip-address
     
     /**
      * Creates new form SipRegistrar
@@ -202,11 +200,35 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             Response response;
             if(request.getMethod().equals("REGISTER")) {
                 // If the request is a REGISTER.
-                response = this.messageFactory.createResponse(200, request);
+            	 //save SIP user agent to HashMap Table, together with his ip
+                FromHeader from = (FromHeader)request.getHeader("From");
+            	String fromAddr = from.getAddress().toString();
+            	String[] list1 = request.getRequestURI().toString().split(":");
+            	String[] list2 = list1[1].split("@");
+            	String userName = list2[0];
+            	String[] preIPAddress = request.getRequestURI().toString().split("@");
+            	String IPAddress = preIPAddress[0];
+                this.jTextArea.append(" / MONGO " + userName);
+                users.put(userName, IPAddress);
+                
+                Set userSet = users.entrySet();
+    			Iterator iterator = userSet.iterator();	
+    			while(iterator.hasNext()) {
+    		         Map.Entry me = (Map.Entry)iterator.next();
+    		         System.out.print(me.getKey() + ": ");
+    		         System.out.println(me.getValue());
+    			}
+                //save from (without the toString()) to HashMap together with username of sender
+                //send 200 OK back to UA
+            	response = this.messageFactory.createResponse(200, request);
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
                 response.addHeader(this.contactHeader);
                 transaction.sendResponse(response);
                 this.jTextArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
+                //System.out.println(request.getHeaders("CSeq"));
+                
+               
+
             }
             else if(request.getMethod().equals("INVITE")) {
                 // If the request is an INVITE.
@@ -215,6 +237,9 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 response.addHeader(this.contactHeader);
                 transaction.sendResponse(response);
                 this.jTextArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
+            
+                //create code so that the server sends the invite to the recipient
+                //find match recipients sip name to his IP address from a HashMap
             }
             else if(request.getMethod().equals("ACK")) {
                 // If the request is an ACK.

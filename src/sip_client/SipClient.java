@@ -27,7 +27,7 @@ public class SipClient extends JFrame implements SipListener {
 	int tag = (new Random()).nextInt(); // The local tag.
 	Address contactAddress;         // The contact address.
 	ContactHeader contactHeader;    // The contact header.
-	
+	Dialog currentDialog;			//global dialog variable so that Bye request can be sent later on
 	
     /**
      * Creates new form SipClient
@@ -84,7 +84,7 @@ public class SipClient extends JFrame implements SipListener {
         });
 
         buttonInvite.setText("Invite");
-        buttonInvite.setEnabled(false);
+        buttonInvite.setEnabled(true);
         buttonInvite.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 onInvite(evt);
@@ -99,7 +99,7 @@ public class SipClient extends JFrame implements SipListener {
             }
         });
 
-        textField.setText("sip:alice@localhost:5060");
+        textField.setText("sip:alice@192.168.0.6:5060");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -286,6 +286,55 @@ public class SipClient extends JFrame implements SipListener {
 
     private void onInvite(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onInvite
         // A method called when you click on the "Invite" button.
+    	//create a new INVITE request and send it to the server, with the intended SIP recipient
+    	try {
+    	    // Get the server address from the text field.
+    	    Address addressTo = this.addressFactory.createAddress(this.textField.getText());
+    	    // Create the request URI for the SIP message.
+    	    javax.sip.address.URI requestURI = addressTo.getURI();
+
+    	    // Create the SIP message headers.
+
+    	    // The "Via" headers.
+    	    ArrayList viaHeaders = new ArrayList();
+    	    ViaHeader viaHeader = this.headerFactory.createViaHeader(this.ip, this.port, "udp", null);
+    	    viaHeaders.add(viaHeader);
+    	    // The "Max-Forwards" header.
+    	    MaxForwardsHeader maxForwardsHeader = this.headerFactory.createMaxForwardsHeader(70);
+    	    // The "Call-Id" header.
+    	    CallIdHeader callIdHeader = this.sipProvider.getNewCallId();
+    	    // The "CSeq" header.
+    	    CSeqHeader cSeqHeader = this.headerFactory.createCSeqHeader(1L,"INVITE");	//maybe change the 1L?
+    	    // The "From" header.
+    	    FromHeader fromHeader = this.headerFactory.createFromHeader(this.contactAddress, String.valueOf(this.tag));
+    	    // The "To" header.
+    	    ToHeader toHeader = this.headerFactory.createToHeader(addressTo, null);
+
+    	    // Create the REGISTER request.
+    	    Request request = this.messageFactory.createRequest(
+    	        requestURI,
+    	        "INVITE",
+    	        callIdHeader,
+    	        cSeqHeader,
+    	        fromHeader,
+    	        toHeader,
+    	        viaHeaders,
+    	        maxForwardsHeader);
+    	    // Add the "Contact" header to the request.
+    	    request.addHeader(contactHeader);
+
+    	    ClientTransaction transaction = this.sipProvider.getNewClientTransaction(request);
+    	    // Send the request statefully, through the client transaction.
+    	    transaction.sendRequest();
+
+    	    // Display the message in the text area.
+    	    this.textArea.append(
+    	        "Request sent:\n" + request.toString() + "\n\n");
+    	}
+    	catch(Exception e) {
+    	    // If an error occurred, display the error.
+    	    this.textArea.append("Request sent failed: " + e.getMessage() + "\n");
+    	}
     }//GEN-LAST:event_onInvite
 
     private void onBye(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onBye
@@ -343,6 +392,8 @@ public class SipClient extends JFrame implements SipListener {
     	// when a invite is received, send 180 trying or whatever
     	//A ringtone should commence and if the user picks up, the ringing stops and 200 ok is sent or whatever
     	//Maybe start a timer and if the user doesnt pick up or reject incoming call, send 603 DECLINE or whatever
+    	
+    
     }
 
     @Override
@@ -351,7 +402,27 @@ public class SipClient extends JFrame implements SipListener {
     	// Get the response.
     	Response response = responseEvent.getResponse();
     	// Display the response message in the text area.
+    	System.out.println(response.getStatusCode());
     	this.textArea.append("\nReceived response: " + response.toString());
+    	
+    	if (response.getStatusCode() == 200 && response.getHeader("CSeq").toString().contains("REGISTER")) {
+    		System.out.println(response.getHeader("CSeq").toString());
+    	}
+    	//what to do when a 200 OK on invite is received  -> send ACK
+    	if (response.getStatusCode() == 200 && response.getHeader("CSeq").toString().contains("INVITE")) {
+    		System.out.println(response.getHeader("CSeq").toString());
+    		currentDialog = responseEvent.getClientTransaction().getDialog();
+    		if (currentDialog != null) {
+    			try {	//create an ACK request and send it
+					Request request = currentDialog.createAck(((CSeqHeader)response.getHeader("CSeq")).getSeqNumber());
+					currentDialog.sendAck(request);
+    			} catch (InvalidArgumentException e) {
+					e.printStackTrace();
+				} catch (SipException e) {
+					e.printStackTrace();
+				}
+    		}
+    	}
     }
 
     @Override
