@@ -405,15 +405,15 @@ public class SipClient extends JFrame implements SipListener {
     	// Get the response.
     	Response response = responseEvent.getResponse();
     	// Display the response message in the text area.
-    	System.out.println(response.getStatusCode());
+    	//System.out.println(response.getStatusCode());
     	this.textArea.append("\nReceived response: " + response.toString());
     	
     	if (response.getStatusCode() == 200 && response.getHeader("CSeq").toString().contains("REGISTER")) {
-    		System.out.println(response.getHeader("CSeq").toString());
+    		//System.out.println(response.getHeader("CSeq").toString());
     	}
     	//what to do when a 200 OK on invite is received  -> send ACK
     	if (response.getStatusCode() == 200 && response.getHeader("CSeq").toString().contains("INVITE")) {
-    		System.out.println(response.getHeader("CSeq").toString());
+    		//System.out.println(response.getHeader("CSeq").toString());
     		currentDialog = responseEvent.getClientTransaction().getDialog();
     		if (currentDialog != null) {
     			try {	//create an ACK request and send it

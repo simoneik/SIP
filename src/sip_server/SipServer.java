@@ -216,8 +216,8 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     			Iterator iterator = userSet.iterator();	
     			while(iterator.hasNext()) {
     		         Map.Entry me = (Map.Entry)iterator.next();
-    		         System.out.print(me.getKey() + ": ");
-    		         System.out.println(me.getValue());
+    		         this.jTextArea.append(me.getKey()+":");
+    		         this.jTextArea.append((String) me.getValue());
     			}
                 //save from (without the toString()) to HashMap together with username of sender
                 //send 200 OK back to UA
@@ -233,7 +233,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             }
             else if(request.getMethod().equals("INVITE")) {
                 // If the request is an INVITE.
-                response = this.messageFactory.createResponse(200, request);
+                response = this.messageFactory.createResponse(100, request);//100 trying
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
                 response.addHeader(this.contactHeader);
                 transaction.sendResponse(response);
@@ -250,7 +250,9 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 	String[] list2 = list1[1].split("@");
                 	String userName = list2[0];
                 	String userIP = users.get(userName);
+                	System.out.println("sip:"+userName+"@"+userIP);
                 	if (userIP == null) {
+                		System.out.println("Could not find UA-B's name in HashMap");
                 		//could not find user, maybe send a 603 error message back?
                 	}
             	    Address addressTo = this.addressFactory.createAddress("sip:"+userName+"@"+userIP);
@@ -282,7 +284,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             	    // Create the REGISTER request.
             	    Request requestForward = this.messageFactory.createRequest(
             	        requestURI,
-            	        "REGISTER",
+            	        "INVITE",
             	        callIdHeader,
             	        cSeqHeader,
             	        fromHeader,
@@ -295,6 +297,8 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 clientTrans.sendRequest();
                 }
                 catch(Exception e) {
+                	System.out.println(e);
+                	e.printStackTrace();
                 }
             }
             else if(request.getMethod().equals("ACK")) {
@@ -319,7 +323,17 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
 
     @Override
     public void processResponse(ResponseEvent responseEvent) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        //throw new UnsupportedOperationException("Not supported yet.");
+    	Response response = responseEvent.getResponse();
+    	try {
+    		if(response.getStatusCode()==180) {	//if 180 ringing is sent from UA-B to server
+    	}
+    	catch(Exception e) {
+    		System.out.println(e);
+    	}
+    
+    		
+    	}
     }
 
     @Override
