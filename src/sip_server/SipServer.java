@@ -325,14 +325,18 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     public void processResponse(ResponseEvent responseEvent) {
         //throw new UnsupportedOperationException("Not supported yet.");
     	Response response = responseEvent.getResponse();
+    	ClientTransaction transaction = responseEvent.getClientTransaction();
     	try {
     		if(response.getStatusCode()==180) {	//if 180 ringing is sent from UA-B to server
+    			//response = this.messageFactory.createResponse(200, request);
+                ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag)); //DONT use this.tag, extract the one from the response received
+                response.addHeader(this.contactHeader);
+                ((SipProvider) transaction).sendResponse(response);
+                this.jTextArea.append("\n / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
+    		}
     	}
     	catch(Exception e) {
     		System.out.println(e);
-    	}
-    
-    		
     	}
     }
 
