@@ -206,11 +206,12 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             	String[] list1 = request.getRequestURI().toString().split(":");
             	String[] list2 = list1[1].split("@");
             	String userName = list2[0];
-            	String[] preIPAddress = request.getRequestURI().toString().split("@");
-            	String IPAddress = preIPAddress[0];
-                this.jTextArea.append(" / MONGO " + userName);
+            	String[] preIPAddress = from.getAddress().toString().split(":");
+            	String IPAddress = preIPAddress[1]+":"+preIPAddress[2];
+            	IPAddress = IPAddress.replace(">", "");
+                this.jTextArea.append(" / MONGO " + IPAddress);
                 users.put(userName, IPAddress);
-                
+                //iterate through HashMap
                 Set userSet = users.entrySet();
     			Iterator iterator = userSet.iterator();	
     			while(iterator.hasNext()) {
@@ -240,6 +241,61 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             
                 //create code so that the server sends the invite to the recipient
                 //find match recipients sip name to his IP address from a HashMap
+
+                //Replace to header with ip of UA-B
+        	    // Send the request statefully, through the client transaction.
+                try {
+            	    // Get the destination address from the text field.
+                	String[] list1 = request.getRequestURI().toString().split(":");
+                	String[] list2 = list1[1].split("@");
+                	String userName = list2[0];
+                	String userIP = users.get(userName);
+                	if (userIP == null) {
+                		//could not find user, maybe send a 603 error message back?
+                	}
+            	    Address addressTo = this.addressFactory.createAddress("sip:"+userName+"@"+userIP);
+            	    // Create the request URI for the SIP message.
+            	    javax.sip.address.URI requestURI = addressTo.getURI();
+
+            	    // Create the SIP message headers.
+
+            	    // The "Via" headers.Get existing list from incoming request
+            	    ViaHeader oldViaHeader = (ViaHeader) request.getHeader(ViaHeader.NAME);
+            	    ArrayList viaHeaders = new ArrayList();
+            	    viaHeaders.add(oldViaHeader);
+            	    ViaHeader viaHeader = this.headerFactory.createViaHeader(this.ip, this.port, "udp", null);
+            	    viaHeaders.add(viaHeader);
+            	    
+            	    // The "Max-Forwards" header.
+            	    MaxForwardsHeader maxForwardsHeader = (MaxForwardsHeader) request.getHeader(MaxForwardsHeader.NAME);//this.headerFactory.createMaxForwardsHeader(70); //get already set up max Forw
+            	    // The "Call-Id" header.
+            	    CallIdHeader callIdHeader = (CallIdHeader)request.getHeader("Call-Id");//get already set up call ID
+            	    // The "CSeq" header.
+            	    CSeqHeader cSeqHeader = (CSeqHeader)request.getHeader("CSeq"); //get already set ip CSeq (INVITE)
+            	    // The "From" header.
+            	    FromHeader oldFrom = (FromHeader)request.getHeader("From");
+            	    String transactionTag = oldFrom.getTag();
+            	    FromHeader fromHeader = this.headerFactory.createFromHeader(this.contactAddress, transactionTag);	//keep same tag
+            	    // The "To" header.
+            	    ToHeader toHeader = this.headerFactory.createToHeader(addressTo, null); //set toHeader to be UA-B
+
+            	    // Create the REGISTER request.
+            	    Request requestForward = this.messageFactory.createRequest(
+            	        requestURI,
+            	        "REGISTER",
+            	        callIdHeader,
+            	        cSeqHeader,
+            	        fromHeader,
+            	        toHeader,
+            	        viaHeaders,
+            	        maxForwardsHeader);
+            	    // Add the "Contact" header to the request.
+            	    requestForward.addHeader(contactHeader);
+        	    ClientTransaction clientTrans = this.sipProvider.getNewClientTransaction(requestForward);
+                clientTrans.sendRequest();
+                }
+                catch(Exception e) {
+                }
             }
             else if(request.getMethod().equals("ACK")) {
                 // If the request is an ACK.
