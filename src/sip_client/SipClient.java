@@ -309,8 +309,10 @@ public class SipClient extends JFrame implements SipListener {
     	    FromHeader fromHeader = this.headerFactory.createFromHeader(this.contactAddress, String.valueOf(this.tag));
     	    // The "To" header.
     	    ToHeader toHeader = this.headerFactory.createToHeader(addressTo, null);
+    	    // Content-type 
+    	    ContentTypeHeader contentTypeHeader = this.headerFactory.createContentTypeHeader("application", "sdp");
 
-    	    // Create the REGISTER request.
+    	    // Create the INVITE request.
     	    Request request = this.messageFactory.createRequest(
     	        requestURI,
     	        "INVITE",
@@ -322,6 +324,7 @@ public class SipClient extends JFrame implements SipListener {
     	        maxForwardsHeader);
     	    // Add the "Contact" header to the request.
     	    request.addHeader(contactHeader);
+    	    request.addHeader(contentTypeHeader);
 
     	    ClientTransaction transaction = this.sipProvider.getNewClientTransaction(request);
     	    // Send the request statefully, through the client transaction.
