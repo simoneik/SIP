@@ -408,7 +408,9 @@ public class SipClient extends JFrame implements SipListener {
 	        ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
 	        response.addHeader(this.contactHeader);
 	        transaction.sendResponse(response);
-	        this.textArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
+	        
+	        //this.textArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
+	        this.textArea.append("\nSent response: " + response.toString());
     	
     	}
         catch(SipException e) {            
