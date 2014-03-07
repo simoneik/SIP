@@ -328,10 +328,10 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     	ClientTransaction transaction = responseEvent.getClientTransaction();
     	try {
     		if(response.getStatusCode()==180) {	//if 180 ringing is sent from UA-B to server
-    			//response = this.messageFactory.createResponse(200, request);
+    			//FIX SO THAT THE RESPONSE IS FORWARDED TO UA-A!
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag)); //DONT use this.tag, extract the one from the response received
-                response.addHeader(this.contactHeader);
-                ((SipProvider) transaction).sendResponse(response);
+                response.addHeader(this.contactHeader);  //what does this do, VIA-header??
+                ((SipProvider) transaction).sendResponse(response);	//forward response to UA-A
                 this.jTextArea.append("\n / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
     		}
     	}
