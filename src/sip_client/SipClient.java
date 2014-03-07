@@ -248,8 +248,6 @@ public class SipClient extends JFrame implements SipListener {
     	    String[] list = useraddress.split("@");
     	    username = list[0].substring(4);
     	    serverIP = list[1];
-
-    	    Address addressFrom = this.addressFactory.createAddress("sip:"+username+"@"+serverIP);
     	    // Create the SIP message headers.
 
     	    // The "Via" headers.
@@ -263,7 +261,7 @@ public class SipClient extends JFrame implements SipListener {
     	    // The "CSeq" header.
     	    CSeqHeader cSeqHeader = this.headerFactory.createCSeqHeader(1L,"REGISTER");
     	    // The "From" header.
-    	    FromHeader fromHeader = this.headerFactory.createFromHeader(addressFrom, String.valueOf(this.tag));
+    	    FromHeader fromHeader = this.headerFactory.createFromHeader(this.contactAddress, String.valueOf(this.tag));
     	    // The "To" header.
     	    ToHeader toHeader = this.headerFactory.createToHeader(addressTo, null);
 
@@ -300,6 +298,7 @@ public class SipClient extends JFrame implements SipListener {
     	try {
     	    // Get the server address from the text field.
     	    Address addressTo = this.addressFactory.createAddress(this.textField.getText());
+    	    Address addressFrom = this.addressFactory.createAddress("sip:"+username+"@"+serverIP);
     	    // Create the request URI for the SIP message.
     	    javax.sip.address.URI requestURI = addressTo.getURI();
 
@@ -317,7 +316,7 @@ public class SipClient extends JFrame implements SipListener {
     	    CSeqHeader cSeqHeader = this.headerFactory.createCSeqHeader(1L,"INVITE");	//maybe change the 1L?
     	    // The "From" header.
     	    System.out.println("CONTACT ADDRESS"+this.contactAddress);
-    	    FromHeader fromHeader = this.headerFactory.createFromHeader(this.contactAddress, String.valueOf(this.tag));
+    	    FromHeader fromHeader = this.headerFactory.createFromHeader(addressFrom, String.valueOf(this.tag));
     	    // The "To" header.
     	    ToHeader toHeader = this.headerFactory.createToHeader(addressTo, null);
     	    // Content-type 
