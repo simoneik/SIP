@@ -2,8 +2,10 @@ package sip_client;
 
 import javax.sip.*;
 import javax.swing.*;
+
 import java.net.*;
 import java.util.*;
+
 import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
@@ -29,6 +31,8 @@ public class SipClient extends JFrame implements SipListener {
 	ContactHeader contactHeader;    // The contact header.
 	Dialog currentDialog;			//global dialog variable so that Bye request can be sent later on
 	
+	public static String username;
+	public static String serverIP;
     /**
      * Creates new form SipClient
      */
@@ -188,7 +192,7 @@ public class SipClient extends JFrame implements SipListener {
     	    Address addressTo = this.addressFactory.createAddress(this.textField.getText());
     	    // Create the request URI for the SIP message.
     	    javax.sip.address.URI requestURI = addressTo.getURI();
-
+    	    
     	    // Create the SIP message headers.
 
     	    // The "Via" headers.
@@ -239,7 +243,13 @@ public class SipClient extends JFrame implements SipListener {
     	    Address addressTo = this.addressFactory.createAddress(this.textField.getText());
     	    // Create the request URI for the SIP message.
     	    javax.sip.address.URI requestURI = addressTo.getURI();
+    	    
+    	    String useraddress = this.textField.getText();
+    	    String[] list = useraddress.split("@");
+    	    username = list[0].substring(4);
+    	    serverIP = list[1];
 
+    	    Address addressFrom = this.addressFactory.createAddress("sip:"+username+"@"+serverIP);
     	    // Create the SIP message headers.
 
     	    // The "Via" headers.
@@ -253,7 +263,7 @@ public class SipClient extends JFrame implements SipListener {
     	    // The "CSeq" header.
     	    CSeqHeader cSeqHeader = this.headerFactory.createCSeqHeader(1L,"REGISTER");
     	    // The "From" header.
-    	    FromHeader fromHeader = this.headerFactory.createFromHeader(this.contactAddress, String.valueOf(this.tag));
+    	    FromHeader fromHeader = this.headerFactory.createFromHeader(addressFrom, String.valueOf(this.tag));
     	    // The "To" header.
     	    ToHeader toHeader = this.headerFactory.createToHeader(addressTo, null);
 
@@ -306,6 +316,7 @@ public class SipClient extends JFrame implements SipListener {
     	    // The "CSeq" header.
     	    CSeqHeader cSeqHeader = this.headerFactory.createCSeqHeader(1L,"INVITE");	//maybe change the 1L?
     	    // The "From" header.
+    	    System.out.println("CONTACT ADDRESS"+this.contactAddress);
     	    FromHeader fromHeader = this.headerFactory.createFromHeader(this.contactAddress, String.valueOf(this.tag));
     	    // The "To" header.
     	    ToHeader toHeader = this.headerFactory.createToHeader(addressTo, null);
