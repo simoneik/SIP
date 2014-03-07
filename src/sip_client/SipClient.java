@@ -265,6 +265,7 @@ public class SipClient extends JFrame implements SipListener {
     	    // The "To" header.
     	    ToHeader toHeader = this.headerFactory.createToHeader(addressTo, null);
     	    this.contactAddress = this.addressFactory.createAddress("sip:"+username+"@"+this.ip + ":" + this.port);
+    	    this.contactHeader = this.headerFactory.createContactHeader(contactAddress);
     	    // Create the REGISTER request.
     	    Request request = this.messageFactory.createRequest(
     	        requestURI,
