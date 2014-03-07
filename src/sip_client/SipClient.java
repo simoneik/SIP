@@ -395,6 +395,8 @@ public class SipClient extends JFrame implements SipListener {
     	// when a invite is received, send 180 trying or whatever
     	//A ringtone should commence and if the user picks up, the ringing stops and 200 ok is sent or whatever
     	//Maybe start a timer and if the user doesnt pick up or reject incoming call, send 603 DECLINE or whatever
+    	 this.textArea.append("\nReceived request: " + requestEvent.getRequest().toString());
+    	
     	try {
 	    	Request request = requestEvent.getRequest();
 	    	System.out.println(request.toString());
