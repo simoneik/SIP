@@ -251,12 +251,12 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 	String[] list2 = list1[1].split("@");
                 	String userName = list2[0];
                 	String userIP = users.get(userName);
-                	System.out.println("sip:"+userName+"@"+userIP);
+                	System.out.println("sip:"+userIP);
                 	if (userIP == null) {
                 		System.out.println("Could not find UA-B's name in HashMap");
                 		//could not find user, maybe send a 603 error message back?
                 	}
-            	    Address addressTo = this.addressFactory.createAddress("sip:"+userName+"@"+userIP);
+            	    Address addressTo = this.addressFactory.createAddress("sip:"+userIP);
             	    // Create the request URI for the SIP message.
             	    javax.sip.address.URI requestURI = addressTo.getURI();
 

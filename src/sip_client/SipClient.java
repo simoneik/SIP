@@ -170,7 +170,7 @@ public class SipClient extends JFrame implements SipListener {
     	    // Add our application as a SIP listener.
     	    this.sipProvider.addSipListener(this);
     	    // Create the contact address used for all SIP messages.
-    	    this.contactAddress = this.addressFactory.createAddress("sip:" + this.ip + ":" + this.port);
+    	    this.contactAddress = this.addressFactory.createAddress("sip:"+ this.ip + ":" + this.port);
     	    // Create the contact header used for all SIP messages.
     	    this.contactHeader = this.headerFactory.createContactHeader(contactAddress);
 
@@ -264,7 +264,7 @@ public class SipClient extends JFrame implements SipListener {
     	    FromHeader fromHeader = this.headerFactory.createFromHeader(this.contactAddress, String.valueOf(this.tag));
     	    // The "To" header.
     	    ToHeader toHeader = this.headerFactory.createToHeader(addressTo, null);
-
+    	    this.contactAddress = this.addressFactory.createAddress("sip:"+username+"@"+this.ip + ":" + this.port);
     	    // Create the REGISTER request.
     	    Request request = this.messageFactory.createRequest(
     	        requestURI,
