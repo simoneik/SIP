@@ -183,6 +183,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     public void processRequest(RequestEvent requestEvent) {
         // Get the request.
         Request request = requestEvent.getRequest();
+        this.jTextArea.append("\n Process Request.... " + request.toString());
 
         this.jTextArea.append("\nRECV " + request.getMethod() + " " + request.getRequestURI().toString());        
         
@@ -324,7 +325,9 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     @Override
     public void processResponse(ResponseEvent responseEvent) {
         //throw new UnsupportedOperationException("Not supported yet.");
+    	
     	Response response = responseEvent.getResponse();
+    	this.jTextArea.append("\n ProcessResponse.... " + response.getStatusCode() + " " + response.getReasonPhrase());
     	ClientTransaction transaction = responseEvent.getClientTransaction();
     	try {
     		if(response.getStatusCode()==180) {	//if 180 ringing is sent from UA-B to server
