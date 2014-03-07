@@ -395,7 +395,28 @@ public class SipClient extends JFrame implements SipListener {
     	// when a invite is received, send 180 trying or whatever
     	//A ringtone should commence and if the user picks up, the ringing stops and 200 ok is sent or whatever
     	//Maybe start a timer and if the user doesnt pick up or reject incoming call, send 603 DECLINE or whatever
+    	try {
+	    	Request request = requestEvent.getRequest();
+	    	System.out.println(request.toString());
+	    	
+	    	ServerTransaction transaction = requestEvent.getServerTransaction();
+	        if(null == transaction) {
+	            transaction = this.sipProvider.getNewServerTransaction(request);
+	        }
+	    	//send 180 Ringing back to UA
+	        Response response = this.messageFactory.createResponse(180, request);
+	        ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
+	        response.addHeader(this.contactHeader);
+	        transaction.sendResponse(response);
+	        this.textArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
     	
+    	}
+        catch(SipException e) {            
+            this.textArea.append("\nERROR (SIP): " + e.getMessage());
+        }
+        catch(Exception e) {
+            this.textArea.append("\nERROR: " + e.getMessage());
+        }
     
     }
 
