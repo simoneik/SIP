@@ -460,6 +460,9 @@ public class SipClient extends JFrame implements SipListener {
 		        //MAKE AN ANSWER BUTTON BLINK AND CLICKABLE etc.
 		        buttonAccept.setEnabled(true);
 	        }
+	        else if(request.getMethod().equals("ACK")) {
+	        	this.textArea.append("\nReceived final ACK: ");
+	        }
 	        
     	
     	}
