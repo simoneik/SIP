@@ -127,7 +127,7 @@ public class SipClient extends JFrame implements SipListener {
             }
         });
 
-        textField.setText("sip:kristoffer@192.168.0.6:5060");
+        textField.setText("sip:simon@192.168.0.6:5060");
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -435,7 +435,7 @@ public class SipClient extends JFrame implements SipListener {
 	    	Request request = requestEvent.getRequest();
 	    	currentRequestEvent = requestEvent;
 	    	System.out.println(request.toString());
-	    	
+	    	//maybe use the one inside the if?:
 	    	ServerTransaction transaction = requestEvent.getServerTransaction();
 	        if(null == transaction) {
 	            transaction = this.sipProvider.getNewServerTransaction(request);

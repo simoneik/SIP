@@ -265,7 +265,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             	    // The "Via" headers.Get existing list from incoming request
             	    ViaHeader oldViaHeader = (ViaHeader) request.getHeader(ViaHeader.NAME);
             	    ArrayList viaHeaders = new ArrayList();
-            	    viaHeaders.add(oldViaHeader);
+            	    //viaHeaders.add(oldViaHeader);
             	    ViaHeader viaHeader = this.headerFactory.createViaHeader(this.ip, this.port, "udp", null);
             	    viaHeaders.add(viaHeader);
             	    
@@ -296,6 +296,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             	    requestForward.addHeader(contactHeader);
         	    ClientTransaction clientTrans = this.sipProvider.getNewClientTransaction(requestForward);
                 clientTrans.sendRequest();
+                this.jTextArea.append(" / Forwarded INVITE " + requestForward.toString());
                 }
                 catch(Exception e) {
                 	System.out.println(e);
@@ -334,7 +335,8 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     			//FIX SO THAT THE RESPONSE IS FORWARDED TO UA-A!
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag)); //DONT use this.tag, extract the one from the response received
                 response.addHeader(this.contactHeader);  //what does this do, VIA-header??
-                ((SipProvider) transaction).sendResponse(response);	//forward response to UA-A
+                //((SipProvider) transaction).sendResponse(response);	//forward response to UA-A
+                this.sipProvider.sendResponse(response);
                 this.jTextArea.append("\n / PROCESSED 180 RINGING, Forwarded it! " + response.getStatusCode() + " " + response.getReasonPhrase());
     		}
     		else if(response.getStatusCode()==200) {	//if 200 ringing is sent from UA-B to server
