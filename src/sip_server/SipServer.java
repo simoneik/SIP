@@ -134,7 +134,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             this.contactAddress = this.addressFactory.createAddress("sip:" + this.ip + ":" + this.port);
             this.contactHeader = this.headerFactory.createContactHeader(contactAddress);
             
-            this.jTextArea.append("****************************************\nLOCAL ADDRESS\n****************************************\n" + this.ip + ":" + this.port + "\n");
+            this.jTextArea.append("****************************************\nLOCAL ADDRESS\n****************************************\n" + this.ip + ":" + this.port + "\n\n");
         }
         catch(Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); 
@@ -179,7 +179,6 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     @Override
     public void processRequest(RequestEvent requestEvent) {
         Request request = requestEvent.getRequest();
-        this.jTextArea.append("****************************************\nRECEIVED REGISTER\n****************************************\n" + request.toString());             
         try {
             // Get or create the server transaction.
             ServerTransaction transaction = requestEvent.getServerTransaction();
@@ -189,7 +188,8 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             // Process the request and send a response.
             Response response;
             if(request.getMethod().equals("REGISTER")) {
-                // If the request is a REGISTER.
+            	this.jTextArea.append("****************************************\nRECEIVED REGISTER\n****************************************\n" + request.toString()+"\n"); 
+            	// If the request is a REGISTER.
             	 //save SIP user agent to HashMap Table, together with his ip
             	FromHeader from = (FromHeader)request.getHeader("From");
             	String fromAddr = from.getAddress().toString();
@@ -218,6 +218,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
 
             }
             else if(request.getMethod().equals("INVITE")) {  // If the request is an INVITE.
+            	this.jTextArea.append("****************************************\nRECEIVED INVITE\n****************************************\n" + request.toString()+"\n"); 
             	//sends 100 trying back to UA-A:
                 response = this.messageFactory.createResponse(100, request);//100 trying
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
