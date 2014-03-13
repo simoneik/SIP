@@ -415,17 +415,7 @@ public class SipClient extends JFrame implements SipListener {
     	
     	try {
 	    	Request request = requestEvent.getRequest();
-<<<<<<< HEAD
-	    	currentRequestEvent = requestEvent;
-	    	System.out.println(request.toString());
-	    	//maybe use the one inside the if?:
-	    	ServerTransaction transaction = requestEvent.getServerTransaction();
-	        if(null == transaction) {
-	            transaction = this.sipProvider.getNewServerTransaction(request);
-	        }
-=======
-	  
->>>>>>> FETCH_HEAD
+
 	    	//send 180 Ringing back to UA
 	        //wrap this in a IF request = INVITE etc.
 	        if(request.getMethod().equals("INVITE") && !this.buttonAccept.isEnabled()){
