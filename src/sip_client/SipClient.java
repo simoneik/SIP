@@ -313,7 +313,7 @@ public class SipClient extends JFrame implements SipListener {
     	}
     }//GEN-LAST:event_onInvite
 
-    private void onBye(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onBye
+    private void onBye(ActionEvent evt) {//GEN-FIRST:event_onBye
         // A method called when you click on the "Bye" button.
     	try {
             Request byeRequest = this.currentDialog.createRequest(Request.BYE);
@@ -399,7 +399,8 @@ public class SipClient extends JFrame implements SipListener {
 	        }
 	        else if(request.getMethod().equals("ACK")) {
 	        	buttonBye.setEnabled(true);
-	        	this.textArea.append("****************************************\nACK RECEIVED\n****************************************\n");
+	        	this.textArea.append("****************************************\nACK RECEIVED\n****************************************\n"+request.toString()+"\n\n");
+	        	currentDialog = requestEvent.getServerTransaction().getDialog();
 	        }
 	        else if(request.getMethod().equals("BYE")){
 	        	ServerTransaction transaction = requestEvent.getServerTransaction();
