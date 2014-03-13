@@ -232,8 +232,8 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                
 
             }
-            else if(request.getMethod().equals("INVITE")) {
-                // If the request is an INVITE.
+            else if(request.getMethod().equals("INVITE")) {  // If the request is an INVITE.
+            	//sends 100 trying back to UA-A:
                 response = this.messageFactory.createResponse(100, request);//100 trying
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
                 response.addHeader(this.contactHeader);

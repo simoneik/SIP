@@ -417,6 +417,7 @@ public class SipClient extends JFrame implements SipListener {
 	            transaction = this.sipProvider.getNewServerTransaction(request);
 	        }
 	    	//send 180 Ringing back to UA
+	        //wrap this in a IF request = INVITE etc.
 	        Response response = this.messageFactory.createResponse(180, request);
 	        ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
 	        response.addHeader(this.contactHeader);
@@ -424,6 +425,7 @@ public class SipClient extends JFrame implements SipListener {
 	        
 	        //this.textArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
 	        this.textArea.append("\nSent response: " + response.toString());
+	        //MAKE AN ANSWER BUTTON BLINK AND CLICKABLE etc.
     	
     	}
         catch(SipException e) {            
@@ -447,8 +449,11 @@ public class SipClient extends JFrame implements SipListener {
     	if (response.getStatusCode() == 200 && response.getHeader("CSeq").toString().contains("REGISTER")) {
     		//System.out.println(response.getHeader("CSeq").toString());
     	}
+    	else if (response.getStatusCode() == 180 && response.getHeader("CSeq").toString().contains("RINGING")) {
+    		//sysout the 180 message
+    	}
     	//what to do when a 200 OK on invite is received  -> send ACK
-    	if (response.getStatusCode() == 200 && response.getHeader("CSeq").toString().contains("INVITE")) {
+    	else if (response.getStatusCode() == 200 && response.getHeader("CSeq").toString().contains("INVITE")) {
     		//System.out.println(response.getHeader("CSeq").toString());
     		currentDialog = responseEvent.getClientTransaction().getDialog();
     		if (currentDialog != null) {
