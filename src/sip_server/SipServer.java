@@ -54,8 +54,8 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPaneTable = new javax.swing.JScrollPane();
-        jTable = new javax.swing.JTable();
+        //jScrollPaneTable = new javax.swing.JScrollPane();
+        //jTable = new javax.swing.JTable();
         jScrollPaneText = new javax.swing.JScrollPane();
         jTextArea = new javax.swing.JTextArea();
 
@@ -68,33 +68,33 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             }
         });
 
-        jTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Time", "URI", "From", "To", "Call-ID", "CSeq", "Dialog", "Transaction", "Type", "Request/Response"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPaneTable.setViewportView(jTable);
+//        jTable.setModel(new javax.swing.table.DefaultTableModel(
+//            new Object [][] {
+//
+//            },
+//            new String [] {
+//                "Time", "URI", "From", "To", "Call-ID", "CSeq", "Dialog", "Transaction", "Type", "Request/Response"
+//            }
+//        ) {
+//            Class[] types = new Class [] {
+//                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+//            };
+//            boolean[] canEdit = new boolean [] {
+//                false, false, false, false, false, false, false, false, false, false
+//            };
+//
+//            public Class getColumnClass(int columnIndex) {
+//                return types [columnIndex];
+//            }
+//
+//            public boolean isCellEditable(int rowIndex, int columnIndex) {
+//                return canEdit [columnIndex];
+//            }
+//        });
+        //jScrollPaneTable.setViewportView(jTable);
 
         jTextArea.setEditable(false);
-        jTextArea.setColumns(20);
+        jTextArea.setColumns(60);
         jTextArea.setRows(5);
         jScrollPaneText.setViewportView(jTextArea);
 
@@ -102,21 +102,20 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+            //.addComponent(jScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
             .addComponent(jScrollPaneText)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
+                //.addComponent(jScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneText, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPaneText, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
-    private void onOpen(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_onOpen
+    private void onOpen(java.awt.event.WindowEvent evt) {
         try {
             this.ip = InetAddress.getLocalHost().getHostAddress();
 
@@ -140,17 +139,11 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
         catch(Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); 
         }
-    }//GEN-LAST:event_onOpen
+    }
 
-    /**
-     * @param args the command line arguments
-     */
+
+    
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -167,7 +160,6 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(SipServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -178,36 +170,28 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane jScrollPaneTable;
+    //private javax.swing.JScrollPane jScrollPaneTable;
     private javax.swing.JScrollPane jScrollPaneText;
-    private javax.swing.JTable jTable;
+    //private javax.swing.JTable jTable;
     private javax.swing.JTextArea jTextArea;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public void processRequest(RequestEvent requestEvent) {
-        // Get the request.
         Request request = requestEvent.getRequest();
-        this.jTextArea.append("\n Process Request.... " + request.toString());
-
-        this.jTextArea.append("\nRECV " + request.getMethod() + " " + request.getRequestURI().toString());        
-        
+        this.jTextArea.append("\n /RECEIVED: " + request.toString());             
         try {
             // Get or create the server transaction.
             ServerTransaction transaction = requestEvent.getServerTransaction();
             if(null == transaction) {
                 transaction = this.sipProvider.getNewServerTransaction(request);
             }
-            
-            // Update the SIP message table.
-            this.updateTable(requestEvent, request, transaction);
-
             // Process the request and send a response.
             Response response;
             if(request.getMethod().equals("REGISTER")) {
                 // If the request is a REGISTER.
             	 //save SIP user agent to HashMap Table, together with his ip
-                FromHeader from = (FromHeader)request.getHeader("From");
+            	FromHeader from = (FromHeader)request.getHeader("From");
             	String fromAddr = from.getAddress().toString();
             	String[] list1 = request.getRequestURI().toString().split(":");
             	String[] list2 = list1[1].split("@");
@@ -215,14 +199,13 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             	String[] preIPAddress = from.getAddress().toString().split(":");
             	String IPAddress = preIPAddress[1]+":"+preIPAddress[2];
             	IPAddress = IPAddress.replace(">", "");
-                this.jTextArea.append(" / MONGO " + IPAddress);
                 users.put(userName, IPAddress);
                 //iterate through HashMap
                 Set userSet = users.entrySet();
     			Iterator iterator = userSet.iterator();	
     			while(iterator.hasNext()) {
     		         Map.Entry me = (Map.Entry)iterator.next();
-    		         this.jTextArea.append(me.getKey()+":");
+    		         this.jTextArea.append("\nRegistered user: "+me.getKey()+":");
     		         this.jTextArea.append((String) me.getValue());
     			}
                 //save from (without the toString()) to HashMap together with username of sender
@@ -231,9 +214,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
                 response.addHeader(this.contactHeader);
                 transaction.sendResponse(response);
-                this.jTextArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
-                //System.out.println(request.getHeaders("CSeq"));
-                
+                this.jTextArea.append("\n / SENT: " + response.getStatusCode() + " " + response.getReasonPhrase());                
                
 
             }
@@ -251,7 +232,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 
                 //saveTransactionAndResponse(response2, transaction);
                 
-                this.jTextArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
+                this.jTextArea.append("\n / SENT: " + response.getStatusCode() + " " + response.getReasonPhrase());
             
                 //create code so that the server sends the invite to the recipient
                 //find match recipients sip name to his IP address from a HashMap
@@ -293,7 +274,6 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             	    FromHeader fromHeader = this.headerFactory.createFromHeader(this.contactAddress, transactionTag);	//keep same tag
             	    // The "To" header.
             	    ToHeader toHeader = this.headerFactory.createToHeader(addressTo, null); //set toHeader to be UA-B
-
             	    // Create the REGISTER request.
             	    Request requestForward = this.messageFactory.createRequest(
             	        requestURI,
@@ -308,7 +288,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             	    requestForward.addHeader(contactHeader);
         	    ClientTransaction clientTrans = this.sipProvider.getNewClientTransaction(requestForward);
                 clientTrans.sendRequest();
-                this.jTextArea.append(" / Forwarded INVITE " + requestForward.toString());
+                this.jTextArea.append("\n / FORWARDED: " + requestForward.toString());
                 }
                 catch(Exception e) {
                 	System.out.println(e);
@@ -324,7 +304,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
                 response.addHeader(this.contactHeader);
                 transaction.sendResponse(response);
-                this.jTextArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
+                this.jTextArea.append("\n / SENT: " + response.getStatusCode() + " " + response.getReasonPhrase());
             }
         }
         catch(SipException e) {            
@@ -335,26 +315,10 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
         }
     }
 
-    private void saveTransactionAndResponse(Response response2,
-			ServerTransaction transaction) {
-    	this.myResponse = response2;
-    	this.myTransaction = transaction;
-	}
-    
-    private ServerTransaction getMyTransaction(){
-    	return this.myTransaction;
-    }
-    
-    private Response getMyResponse(){
-    	return this.myResponse;
-    }
-
 	@Override
-    public void processResponse(ResponseEvent responseEvent) {
-        //throw new UnsupportedOperationException("Not supported yet.");
-    	
+    public void processResponse(ResponseEvent responseEvent) {    	
     	Response response = responseEvent.getResponse();
-    	this.jTextArea.append("\n ProcessResponse.... " + response.getStatusCode() + " " + response.getReasonPhrase());
+    	this.jTextArea.append("\n ProcessResponse: " + response.getStatusCode() + " " + response.getReasonPhrase());
     	ClientTransaction transaction = responseEvent.getClientTransaction();
     	try {
     		if(response.getStatusCode()==180) {	//if 180 ringing is sent from UA-B to server
@@ -364,14 +328,14 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 ((SipProvider) transaction).sendResponse(response);	//forward response to UA-A	
                 //getMyTransaction().sendResponse(getMyResponse());
                 //this.sipProvider.sendResponse(response);
-                this.jTextArea.append("\n / PROCESSED 180 RINGING, Forwarded it! " + response.getStatusCode() + " " + response.getReasonPhrase());
+                this.jTextArea.append("\n / FORWARDED: " + response.getStatusCode() + " " + response.getReasonPhrase());
     		}
     		else if(response.getStatusCode()==200) {	//if 200 ringing is sent from UA-B to server
     			//FIX SO THAT THE RESPONSE IS FORWARDED TO UA-A!
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag)); //DONT use this.tag, extract the one from the response received
                 response.addHeader(this.contactHeader);  //what does this do, VIA-header??
                 ((SipProvider) transaction).sendResponse(response);	//forward response to UA-A
-                this.jTextArea.append("\n / PROCESSED 200 RINGING, Forwarded it! " + response.getStatusCode() + " " + response.getReasonPhrase());
+                this.jTextArea.append("\n / FORWARDED: " + response.getStatusCode() + " " + response.getReasonPhrase());
     		}
     	}
     	catch(Exception e) {
@@ -399,27 +363,27 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
-    private void updateTable(RequestEvent requestEvent, Request request, ServerTransaction transaction) {
-        // Get the table model.
-        DefaultTableModel tableModel = (DefaultTableModel) this.jTable.getModel();
-        // Get the headers.
-        FromHeader from = (FromHeader)request.getHeader("From");
-        ToHeader to = (ToHeader)request.getHeader("To");
-        CallIdHeader callId = (CallIdHeader)request.getHeader("Call-Id");
-        CSeqHeader cSeq = (CSeqHeader)request.getHeader("CSeq");
-        // Get the SIP dialog.
-        Dialog dialog = transaction.getDialog();
-        // Add a new line to the table.
-        tableModel.addRow(new Object[] {
-            (new Date()).toString(),
-            request.getRequestURI() != null ? request.getRequestURI().toString() : "(unknown)",
-            from != null ? from.getAddress() : "(unknown)",
-            to != null ? to.getAddress() : "(unknown)",
-            callId != null ? callId.getCallId() : "(unknown)",
-            cSeq != null ? cSeq.getSeqNumber() + " " + cSeq.getMethod() : "(unknown)",
-            dialog != null ? dialog.getDialogId() : "",
-            transaction.getBranchId(),
-            "Request",
-            request.getMethod() });
-    }
+//    private void updateTable(RequestEvent requestEvent, Request request, ServerTransaction transaction) {
+//        // Get the table model.
+//        DefaultTableModel tableModel = (DefaultTableModel) this.jTable.getModel();
+//        // Get the headers.
+//        FromHeader from = (FromHeader)request.getHeader("From");
+//        ToHeader to = (ToHeader)request.getHeader("To");
+//        CallIdHeader callId = (CallIdHeader)request.getHeader("Call-Id");
+//        CSeqHeader cSeq = (CSeqHeader)request.getHeader("CSeq");
+//        // Get the SIP dialog.
+//        Dialog dialog = transaction.getDialog();
+//        // Add a new line to the table.
+//        tableModel.addRow(new Object[] {
+//            (new Date()).toString(),
+//            request.getRequestURI() != null ? request.getRequestURI().toString() : "(unknown)",
+//            from != null ? from.getAddress() : "(unknown)",
+//            to != null ? to.getAddress() : "(unknown)",
+//            callId != null ? callId.getCallId() : "(unknown)",
+//            cSeq != null ? cSeq.getSeqNumber() + " " + cSeq.getMethod() : "(unknown)",
+//            dialog != null ? dialog.getDialogId() : "",
+//            transaction.getBranchId(),
+//            "Request",
+//            request.getMethod() });
+//    }
 }
