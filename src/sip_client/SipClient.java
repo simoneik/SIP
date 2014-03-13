@@ -79,10 +79,8 @@ public class SipClient extends JFrame implements SipListener {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 // SEND 200 OK, ACCEPT CALL
             	try {
-	            	ServerTransaction transaction = currentRequestEvent.getServerTransaction();
-	    	        if(null == transaction) {
-	    	            transaction = sipProvider.getNewServerTransaction(currentRequestEvent.getRequest());
-	    	        }
+	            	ServerTransaction transaction = sipProvider.getNewServerTransaction(currentRequestEvent.getRequest());
+	            	
     	        	Response response;
 				
 					response = messageFactory.createResponse(200, currentRequestEvent.getRequest());
@@ -129,7 +127,7 @@ public class SipClient extends JFrame implements SipListener {
             }
         });
 
-        textField.setText("sip:simon@192.168.0.6:5060");
+        textField.setText("sip:kristoffer@192.168.0.6:5060");
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
