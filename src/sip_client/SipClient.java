@@ -190,7 +190,7 @@ public class SipClient extends JFrame implements SipListener {
     	    this.contactHeader = this.headerFactory.createContactHeader(contactAddress);
 
     	    // Display the local IP address and port in the text area.
-    	    this.textArea.append("****************************************\nLOCAL ADDRESS\n****************************************\n" + this.ip + ":" + this.port + "\n");
+    	    this.textArea.append("****************************************\nLOCAL ADDRESS\n****************************************\n" + this.ip + ":" + this.port + "\n\n");
     	}
     	catch(Exception e) {
     	    // If an error occurs, display an error message box and exit.
