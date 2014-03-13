@@ -4,6 +4,7 @@ import javax.sip.*;
 import javax.swing.*;
 
 import java.net.*;
+import java.text.ParseException;
 import java.util.*;
 
 import javax.sip.address.*;
@@ -30,6 +31,7 @@ public class SipClient extends JFrame implements SipListener {
 	Address contactAddress;         // The contact address.
 	ContactHeader contactHeader;    // The contact header.
 	Dialog currentDialog;			//global dialog variable so that Bye request can be sent later on
+	RequestEvent currentRequestEvent;
 	
 	public static String username;
 	public static String serverIP;
@@ -51,7 +53,7 @@ public class SipClient extends JFrame implements SipListener {
 
         scrollPane = new javax.swing.JScrollPane();
         textArea = new javax.swing.JTextArea();
-        buttonRegisterStateless = new javax.swing.JButton();
+        buttonAccept = new javax.swing.JButton();
         buttonRegisterStatefull = new javax.swing.JButton();
         buttonInvite = new javax.swing.JButton();
         buttonBye = new javax.swing.JButton();
@@ -71,11 +73,35 @@ public class SipClient extends JFrame implements SipListener {
         textArea.setRows(5);
         scrollPane.setViewportView(textArea);
 
-        buttonRegisterStateless.setText("Reg (SL)");
-        buttonRegisterStateless.setEnabled(true);
-        buttonRegisterStateless.addActionListener(new java.awt.event.ActionListener() {
+        buttonAccept.setText("Accept");
+        buttonAccept.setEnabled(false);
+        buttonAccept.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                onRegisterStateless(evt);
+                // SEND 200 OK, ACCEPT CALL
+            	try {
+	            	ServerTransaction transaction = currentRequestEvent.getServerTransaction();
+	    	        if(null == transaction) {
+	    	            transaction = sipProvider.getNewServerTransaction(currentRequestEvent.getRequest());
+	    	        }
+    	        	Response response;
+				
+					response = messageFactory.createResponse(200, currentRequestEvent.getRequest());
+					((ToHeader)response.getHeader("To")).setTag(String.valueOf(tag));
+	    	        response.addHeader(contactHeader);
+	    	        transaction.sendResponse(response);
+	    	        
+	    	        textArea.append("\nSent response: (Accepted) " + response.toString());
+	    	    
+            	}
+            	catch(SipException e) {            
+	    	        textArea.append("\nERROR (SIP): " + e.getMessage());
+	    	    }
+	    	    catch(Exception e) {
+	    	        textArea.append("\nERROR: " + e.getMessage());
+	    	    }
+    	        
+    	        //this.textArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
+    	        
             }
         });
 
@@ -103,7 +129,11 @@ public class SipClient extends JFrame implements SipListener {
             }
         });
 
+<<<<<<< HEAD
         textField.setText("sip:simon@192.168.0.6:5060");
+=======
+        textField.setText("sip:kristoffer@192.168.0.6:5060");
+>>>>>>> FETCH_HEAD
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -114,11 +144,11 @@ public class SipClient extends JFrame implements SipListener {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(scrollPane)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(buttonRegisterStateless, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonRegisterStatefull, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonInvite, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buttonAccept, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonBye, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 2, Short.MAX_VALUE))
@@ -134,7 +164,7 @@ public class SipClient extends JFrame implements SipListener {
                 .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonRegisterStateless)
+                    .addComponent(buttonAccept)
                     .addComponent(buttonInvite)
                     .addComponent(buttonBye)
                     .addComponent(buttonRegisterStatefull))
@@ -394,7 +424,7 @@ public class SipClient extends JFrame implements SipListener {
     private javax.swing.JButton buttonBye;
     private javax.swing.JButton buttonInvite;
     private javax.swing.JButton buttonRegisterStatefull;
-    private javax.swing.JButton buttonRegisterStateless;
+    private javax.swing.JButton buttonAccept;
     private javax.swing.JScrollPane scrollPane;
     private javax.swing.JTextArea textArea;
     private javax.swing.JTextField textField;
@@ -410,6 +440,7 @@ public class SipClient extends JFrame implements SipListener {
     	
     	try {
 	    	Request request = requestEvent.getRequest();
+	    	currentRequestEvent = requestEvent;
 	    	System.out.println(request.toString());
 	    	
 	    	ServerTransaction transaction = requestEvent.getServerTransaction();
@@ -418,14 +449,18 @@ public class SipClient extends JFrame implements SipListener {
 	        }
 	    	//send 180 Ringing back to UA
 	        //wrap this in a IF request = INVITE etc.
-	        Response response = this.messageFactory.createResponse(180, request);
-	        ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
-	        response.addHeader(this.contactHeader);
-	        transaction.sendResponse(response);
+	        if(request.getMethod().equals("INVITE")){
+	        	Response response = this.messageFactory.createResponse(180, request);
+		        ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
+		        response.addHeader(this.contactHeader);
+		        transaction.sendResponse(response);
+		        
+		        //this.textArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
+		        this.textArea.append("\nSent response: " + response.toString());
+		        //MAKE AN ANSWER BUTTON BLINK AND CLICKABLE etc.
+		        buttonAccept.setEnabled(true);
+	        }
 	        
-	        //this.textArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
-	        this.textArea.append("\nSent response: " + response.toString());
-	        //MAKE AN ANSWER BUTTON BLINK AND CLICKABLE etc.
     	
     	}
         catch(SipException e) {            
@@ -460,6 +495,7 @@ public class SipClient extends JFrame implements SipListener {
     			try {	//create an ACK request and send it
 					Request request = currentDialog.createAck(((CSeqHeader)response.getHeader("CSeq")).getSeqNumber());
 					currentDialog.sendAck(request);
+					this.textArea.append("\nSuccessfully established a DIALOG!");
     			} catch (InvalidArgumentException e) {
 					e.printStackTrace();
 				} catch (SipException e) {
