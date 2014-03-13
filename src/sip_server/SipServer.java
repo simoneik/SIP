@@ -14,6 +14,8 @@ import javax.sip.message.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
+import test.unit.gov.nist.javax.sip.stack.tls.MyRouter;
+
 public class SipServer extends javax.swing.JFrame implements SipListener {
         
     private SipFactory sipFactory;
@@ -32,6 +34,9 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     private Address contactAddress;
     private ContactHeader contactHeader;
     private static HashMap<String, String> users = new HashMap<String, String>(); //contains mapping of username to ip-address
+    
+    ServerTransaction myTransaction;
+    Response myResponse;
     
     /**
      * Creates new form SipRegistrar
@@ -240,10 +245,11 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 transaction.sendResponse(response);
                 
                 /* MONGO BARN */
-                Response response2 = this.messageFactory.createResponse(200, request);
-                ((ToHeader)response2.getHeader("From")).setTag(String.valueOf(this.tag));
-                response2.addHeader(this.contactHeader);
-                transaction.sendResponse(response2);
+                //Response response2 = this.messageFactory.createResponse(200, request);
+                //((ToHeader)response2.getHeader("To")).setTag(String.valueOf(this.tag));
+                //response2.addHeader(this.contactHeader);
+                
+                //saveTransactionAndResponse(response2, transaction);
                 
                 this.jTextArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
             
@@ -272,10 +278,9 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             	    // The "Via" headers.Get existing list from incoming request
             	    ViaHeader oldViaHeader = (ViaHeader) request.getHeader(ViaHeader.NAME);
             	    ArrayList viaHeaders = new ArrayList();
-            	    //viaHeaders.add(oldViaHeader);
-            	    ViaHeader viaHeader = this.headerFactory.createViaHeader(this.ip, this.port, "udp", null);
-            	    viaHeaders.add(viaHeader);
-            	    
+            	    //ViaHeader viaHeader = this.headerFactory.createViaHeader(this.ip, this.port, "udp", null);
+            	    //viaHeaders.add(viaHeader);
+            	    viaHeaders.add(oldViaHeader);
             	    // The "Max-Forwards" header.
             	    MaxForwardsHeader maxForwardsHeader = (MaxForwardsHeader) request.getHeader(MaxForwardsHeader.NAME);//this.headerFactory.createMaxForwardsHeader(70); //get already set up max Forw
             	    // The "Call-Id" header.
@@ -330,7 +335,21 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
         }
     }
 
-    @Override
+    private void saveTransactionAndResponse(Response response2,
+			ServerTransaction transaction) {
+    	this.myResponse = response2;
+    	this.myTransaction = transaction;
+	}
+    
+    private ServerTransaction getMyTransaction(){
+    	return this.myTransaction;
+    }
+    
+    private Response getMyResponse(){
+    	return this.myResponse;
+    }
+
+	@Override
     public void processResponse(ResponseEvent responseEvent) {
         //throw new UnsupportedOperationException("Not supported yet.");
     	
@@ -342,8 +361,9 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     			//FIX SO THAT THE RESPONSE IS FORWARDED TO UA-A!
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag)); //DONT use this.tag, extract the one from the response received
                 response.addHeader(this.contactHeader);  //what does this do, VIA-header??
-                //((SipProvider) transaction).sendResponse(response);	//forward response to UA-A		        
-                this.sipProvider.sendResponse(response);
+                ((SipProvider) transaction).sendResponse(response);	//forward response to UA-A	
+                //getMyTransaction().sendResponse(getMyResponse());
+                //this.sipProvider.sendResponse(response);
                 this.jTextArea.append("\n / PROCESSED 180 RINGING, Forwarded it! " + response.getStatusCode() + " " + response.getReasonPhrase());
     		}
     		else if(response.getStatusCode()==200) {	//if 200 ringing is sent from UA-B to server
