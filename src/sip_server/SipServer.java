@@ -335,7 +335,11 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     			//FIX SO THAT THE RESPONSE IS FORWARDED TO UA-A!
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag)); //DONT use this.tag, extract the one from the response received
                 response.addHeader(this.contactHeader);  //what does this do, VIA-header??
+<<<<<<< HEAD
                 //((SipProvider) transaction).sendResponse(response);	//forward response to UA-A
+=======
+                ((SipProvider) transaction).sendResponse(response);	//forward response to UA-A
+>>>>>>> FETCH_HEAD
                 this.sipProvider.sendResponse(response);
                 this.jTextArea.append("\n / PROCESSED 180 RINGING, Forwarded it! " + response.getStatusCode() + " " + response.getReasonPhrase());
     		}
