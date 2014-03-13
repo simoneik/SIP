@@ -78,28 +78,9 @@ public class SipClient extends JFrame implements SipListener {
         buttonAccept.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 // SEND 200 OK, ACCEPT CALL
-            	try {
-	            	ServerTransaction transaction = sipProvider.getNewServerTransaction(currentRequestEvent.getRequest());
-	            	
-    	        	Response response;
-				
-					response = messageFactory.createResponse(200, currentRequestEvent.getRequest());
-					((ToHeader)response.getHeader("To")).setTag(String.valueOf(tag));
-	    	        response.addHeader(contactHeader);
-	    	        transaction.sendResponse(response);
-	    	        
-	    	        textArea.append("\nSent response: (Accepted) " + response.toString());
-	    	    
-            	}
-            	catch(SipException e) {            
-	    	        textArea.append("\nERROR (SIP): " + e.getMessage());
-	    	    }
-	    	    catch(Exception e) {
-	    	        textArea.append("\nERROR: " + e.getMessage());
-	    	    }
-    	        
+            	
     	        //this.textArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
-    	        
+    	        processRequest(currentRequestEvent);
             }
         });
 
@@ -442,7 +423,7 @@ public class SipClient extends JFrame implements SipListener {
 	        }
 	    	//send 180 Ringing back to UA
 	        //wrap this in a IF request = INVITE etc.
-	        if(request.getMethod().equals("INVITE")){
+	        if(request.getMethod().equals("INVITE") && !this.buttonAccept.isEnabled()){
 	        	Response response = this.messageFactory.createResponse(180, request);
 		        ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
 		        response.addHeader(this.contactHeader);
@@ -452,6 +433,14 @@ public class SipClient extends JFrame implements SipListener {
 		        this.textArea.append("\nSent response: " + response.toString());
 		        //MAKE AN ANSWER BUTTON BLINK AND CLICKABLE etc.
 		        buttonAccept.setEnabled(true);
+	        }
+	        else if(request.getMethod().equals("INVITE") && this.buttonAccept.isEnabled()){
+	        	Response response = this.messageFactory.createResponse(200, request);
+		        ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
+		        response.addHeader(this.contactHeader);
+		        transaction.sendResponse(response);
+		        
+		        this.textArea.append("\nSent response: (Accepted) " + response.toString());      
 	        }
 	        else if(request.getMethod().equals("ACK")) {
 	        	this.textArea.append("\nReceived final ACK: ");
