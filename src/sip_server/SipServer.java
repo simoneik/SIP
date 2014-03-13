@@ -134,7 +134,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             this.contactAddress = this.addressFactory.createAddress("sip:" + this.ip + ":" + this.port);
             this.contactHeader = this.headerFactory.createContactHeader(contactAddress);
             
-            this.jTextArea.append("Local address: " + this.ip + ":" + this.port + "\n");
+            this.jTextArea.append("****************************************\nLOCAL ADDRESS\n****************************************\n" + this.ip + ":" + this.port + "\n");
         }
         catch(Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE); 
@@ -179,7 +179,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     @Override
     public void processRequest(RequestEvent requestEvent) {
         Request request = requestEvent.getRequest();
-        this.jTextArea.append("\n /RECEIVED: " + request.toString());             
+        this.jTextArea.append("\n\n /RECEIVED: " + request.toString());             
         try {
             // Get or create the server transaction.
             ServerTransaction transaction = requestEvent.getServerTransaction();
@@ -201,20 +201,19 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             	IPAddress = IPAddress.replace(">", "");
                 users.put(userName, IPAddress);
                 //iterate through HashMap
-                Set userSet = users.entrySet();
-    			Iterator iterator = userSet.iterator();	
-    			while(iterator.hasNext()) {
-    		         Map.Entry me = (Map.Entry)iterator.next();
-    		         this.jTextArea.append("\nRegistered user: "+me.getKey()+":");
-    		         this.jTextArea.append((String) me.getValue());
-    			}
                 //save from (without the toString()) to HashMap together with username of sender
                 //send 200 OK back to UA
             	response = this.messageFactory.createResponse(200, request);
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
                 response.addHeader(this.contactHeader);
                 transaction.sendResponse(response);
-                this.jTextArea.append("\n / SENT: " + response.getStatusCode() + " " + response.getReasonPhrase());                
+                this.jTextArea.append("\n / SENT: " + response.getStatusCode() + " " + response.getReasonPhrase()+"\n");  
+                Set userSet = users.entrySet();
+    			Iterator iterator = userSet.iterator();	
+    			while(iterator.hasNext()) {
+    		         Map.Entry me = (Map.Entry)iterator.next();
+    		         this.jTextArea.append("****************************************\nREGISTERED USER\n****************************************\n" +me.getKey()+":"+(String) me.getValue()+"\n");
+    			}
                
 
             }
@@ -232,7 +231,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 
                 //saveTransactionAndResponse(response2, transaction);
                 
-                this.jTextArea.append("\n / SENT: " + response.getStatusCode() + " " + response.getReasonPhrase());
+                this.jTextArea.append("****************************************\nSENT 100 TRYING\n****************************************\n"+ response.toString()+"\n");
             
                 //create code so that the server sends the invite to the recipient
                 //find match recipients sip name to his IP address from a HashMap
@@ -288,7 +287,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             	    requestForward.addHeader(contactHeader);
         	    ClientTransaction clientTrans = this.sipProvider.getNewClientTransaction(requestForward);
                 clientTrans.sendRequest();
-                this.jTextArea.append("\n / FORWARDED: " + requestForward.toString());
+                this.jTextArea.append("****************************************\nFORWARD INVITE\n****************************************\n" + requestForward.toString()+"\n");
                 }
                 catch(Exception e) {
                 	System.out.println(e);
@@ -304,7 +303,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
                 response.addHeader(this.contactHeader);
                 transaction.sendResponse(response);
-                this.jTextArea.append("\n / SENT: " + response.getStatusCode() + " " + response.getReasonPhrase());
+                this.jTextArea.append("****************************************\nBYE FORWARDED\n****************************************\n"+response.toString()+"\n");
             }
         }
         catch(SipException e) {            
@@ -318,7 +317,6 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
 	@Override
     public void processResponse(ResponseEvent responseEvent) {    	
     	Response response = responseEvent.getResponse();
-    	this.jTextArea.append("\n ProcessResponse: " + response.getStatusCode() + " " + response.getReasonPhrase());
     	ClientTransaction transaction = responseEvent.getClientTransaction();
     	try {
     		if(response.getStatusCode()==180) {	//if 180 ringing is sent from UA-B to server
@@ -328,14 +326,14 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 ((SipProvider) transaction).sendResponse(response);	//forward response to UA-A	
                 //getMyTransaction().sendResponse(getMyResponse());
                 //this.sipProvider.sendResponse(response);
-                this.jTextArea.append("\n / FORWARDED: " + response.getStatusCode() + " " + response.getReasonPhrase());
+                this.jTextArea.append("****************************************\nFORWARDED 180 RINGING\n****************************************\n"+response.toString()+"\n");
     		}
     		else if(response.getStatusCode()==200) {	//if 200 ringing is sent from UA-B to server
     			//FIX SO THAT THE RESPONSE IS FORWARDED TO UA-A!
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag)); //DONT use this.tag, extract the one from the response received
                 response.addHeader(this.contactHeader);  //what does this do, VIA-header??
                 ((SipProvider) transaction).sendResponse(response);	//forward response to UA-A
-                this.jTextArea.append("\n / FORWARDED: " + response.getStatusCode() + " " + response.getReasonPhrase());
+                this.jTextArea.append("****************************************\nFORWARDED 200 OK\n****************************************\n"+response.toString()+"\n");
     		}
     	}
     	catch(Exception e) {
