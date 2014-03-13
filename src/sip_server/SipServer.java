@@ -179,7 +179,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     @Override
     public void processRequest(RequestEvent requestEvent) {
         Request request = requestEvent.getRequest();
-        this.jTextArea.append("\n /RECEIVED: " + request.toString());             
+        this.jTextArea.append("\n\n /RECEIVED: " + request.toString());             
         try {
             // Get or create the server transaction.
             ServerTransaction transaction = requestEvent.getServerTransaction();
@@ -201,20 +201,20 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
             	IPAddress = IPAddress.replace(">", "");
                 users.put(userName, IPAddress);
                 //iterate through HashMap
-                Set userSet = users.entrySet();
-    			Iterator iterator = userSet.iterator();	
-    			while(iterator.hasNext()) {
-    		         Map.Entry me = (Map.Entry)iterator.next();
-    		         this.jTextArea.append("\nRegistered user: "+me.getKey()+":");
-    		         this.jTextArea.append((String) me.getValue());
-    			}
                 //save from (without the toString()) to HashMap together with username of sender
                 //send 200 OK back to UA
             	response = this.messageFactory.createResponse(200, request);
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
                 response.addHeader(this.contactHeader);
                 transaction.sendResponse(response);
-                this.jTextArea.append("\n / SENT: " + response.getStatusCode() + " " + response.getReasonPhrase());                
+                this.jTextArea.append("\n / SENT: " + response.getStatusCode() + " " + response.getReasonPhrase()+"\n");  
+                Set userSet = users.entrySet();
+    			Iterator iterator = userSet.iterator();	
+    			while(iterator.hasNext()) {
+    		         Map.Entry me = (Map.Entry)iterator.next();
+    		         this.jTextArea.append("\n\nRegistered user: "+me.getKey()+":");
+    		         this.jTextArea.append((String) me.getValue()+"\n");
+    			}
                
 
             }
