@@ -238,6 +238,13 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
                 response.addHeader(this.contactHeader);
                 transaction.sendResponse(response);
+                
+                /* MONGO BARN */
+                Response response2 = this.messageFactory.createResponse(200, request);
+                ((ToHeader)response2.getHeader("From")).setTag(String.valueOf(this.tag));
+                response2.addHeader(this.contactHeader);
+                transaction.sendResponse(response2);
+                
                 this.jTextArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
             
                 //create code so that the server sends the invite to the recipient
@@ -335,7 +342,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     			//FIX SO THAT THE RESPONSE IS FORWARDED TO UA-A!
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag)); //DONT use this.tag, extract the one from the response received
                 response.addHeader(this.contactHeader);  //what does this do, VIA-header??
-                //((SipProvider) transaction).sendResponse(response);	//forward response to UA-A
+                //((SipProvider) transaction).sendResponse(response);	//forward response to UA-A		        
                 this.sipProvider.sendResponse(response);
                 this.jTextArea.append("\n / PROCESSED 180 RINGING, Forwarded it! " + response.getStatusCode() + " " + response.getReasonPhrase());
     		}
