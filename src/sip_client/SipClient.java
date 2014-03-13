@@ -465,6 +465,17 @@ public class SipClient extends JFrame implements SipListener {
 	        	buttonBye.setEnabled(true);
 	        	this.textArea.append("\nReceived final ACK: ");
 	        }
+	        else if(request.getMethod().equals("BYE")){
+	        	ServerTransaction transaction = requestEvent.getServerTransaction();
+		        if(null == transaction) {
+		            transaction = this.sipProvider.getNewServerTransaction(request);
+		        }
+		        
+	        	Response response3 = this.messageFactory.createResponse(200, request);
+		        ((ToHeader)response3.getHeader("To")).setTag(String.valueOf(this.tag));
+		        response3.addHeader(this.contactHeader);
+		        transaction.sendResponse(response3);
+	        }
 	        
     	
     	}
