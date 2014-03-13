@@ -31,7 +31,8 @@ public class SipClient extends JFrame implements SipListener {
 	Address contactAddress;         // The contact address.
 	ContactHeader contactHeader;    // The contact header.
 	Dialog currentDialog;			//global dialog variable so that Bye request can be sent later on
-	RequestEvent currentRequestEvent;
+	RequestEvent myRequestEvent;
+	ServerTransaction myTransaction;
 	
 	public static String username;
 	public static String serverIP;
@@ -80,7 +81,7 @@ public class SipClient extends JFrame implements SipListener {
                 // SEND 200 OK, ACCEPT CALL
             	
     	        //this.textArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
-    	        processRequest(currentRequestEvent);
+    	        processRequest(myRequestEvent);
             }
         });
 
@@ -414,33 +415,41 @@ public class SipClient extends JFrame implements SipListener {
     	
     	try {
 	    	Request request = requestEvent.getRequest();
-	    	currentRequestEvent = requestEvent;
-	    	System.out.println(request.toString());
-	    	
-	    	ServerTransaction transaction = requestEvent.getServerTransaction();
-	        if(null == transaction) {
-	            transaction = this.sipProvider.getNewServerTransaction(request);
-	        }
+	  
 	    	//send 180 Ringing back to UA
 	        //wrap this in a IF request = INVITE etc.
 	        if(request.getMethod().equals("INVITE") && !this.buttonAccept.isEnabled()){
+	        	System.out.println(request.toString());
+	        	ServerTransaction transaction = requestEvent.getServerTransaction();
+		        if(null == transaction) {
+		            transaction = this.sipProvider.getNewServerTransaction(request);
+		        }
+		        
 	        	Response response = this.messageFactory.createResponse(180, request);
 		        ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
 		        response.addHeader(this.contactHeader);
 		        transaction.sendResponse(response);
 		        
+		        storeTransaction(transaction);
+		        storeRequest(requestEvent);
+		        /*
+		        Response response2 = this.messageFactory.createResponse(200, request);
+		        ((ToHeader)response2.getHeader("To")).setTag(String.valueOf(this.tag));
+		        response2.addHeader(this.contactHeader);
+		        transaction.sendResponse(response2);
+		        */
 		        //this.textArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
-		        this.textArea.append("\nSent response: " + response.toString());
+		        this.textArea.append("\nSent response & lol: " + response.toString());
 		        //MAKE AN ANSWER BUTTON BLINK AND CLICKABLE etc.
 		        buttonAccept.setEnabled(true);
 	        }
 	        else if(request.getMethod().equals("INVITE") && this.buttonAccept.isEnabled()){
-	        	Response response = this.messageFactory.createResponse(200, request);
-		        ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
-		        response.addHeader(this.contactHeader);
-		        transaction.sendResponse(response);
+	        	Response response2 = this.messageFactory.createResponse(200, getMyRequest());
+		        ((ToHeader)response2.getHeader("To")).setTag(String.valueOf(this.tag));
+		        response2.addHeader(this.contactHeader);
+		        getTransaction().sendResponse(response2);
 		        
-		        this.textArea.append("\nSent response: (Accepted) " + response.toString());      
+		        this.textArea.append("\nSent response: (Accepted) " + response2.toString());      
 	        }
 	        else if(request.getMethod().equals("ACK")) {
 	        	this.textArea.append("\nReceived final ACK: ");
@@ -457,7 +466,24 @@ public class SipClient extends JFrame implements SipListener {
     
     }
 
-    @Override
+    private void storeRequest(RequestEvent request) {
+		// TODO Auto-generated method stub
+		this.myRequestEvent = request;
+	}
+    
+    private Request getMyRequest() {
+		// TODO Auto-generated method stub
+		return this.myRequestEvent.getRequest();
+	}
+
+	private void storeTransaction(ServerTransaction transaction) {
+    	this.myTransaction = transaction;
+	}
+
+    private ServerTransaction getTransaction(){
+    	return this.myTransaction;
+    }
+	@Override
     public void processResponse(ResponseEvent responseEvent) {
         // A method called when you receive a SIP response.
     	// Get the response.
@@ -471,6 +497,7 @@ public class SipClient extends JFrame implements SipListener {
     	}
     	else if (response.getStatusCode() == 180 && response.getHeader("CSeq").toString().contains("RINGING")) {
     		//sysout the 180 message
+    		this.textArea.append("\n180 response: " + response.toString());     
     	}
     	//what to do when a 200 OK on invite is received  -> send ACK
     	else if (response.getStatusCode() == 200 && response.getHeader("CSeq").toString().contains("INVITE")) {
