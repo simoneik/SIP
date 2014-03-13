@@ -179,7 +179,7 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
     @Override
     public void processRequest(RequestEvent requestEvent) {
         Request request = requestEvent.getRequest();
-        this.jTextArea.append("\n\n /RECEIVED: " + request.toString());             
+        this.jTextArea.append("****************************************\nRECEIVED REGISTER\n****************************************\n" + request.toString());             
         try {
             // Get or create the server transaction.
             ServerTransaction transaction = requestEvent.getServerTransaction();
@@ -207,12 +207,12 @@ public class SipServer extends javax.swing.JFrame implements SipListener {
                 ((ToHeader)response.getHeader("To")).setTag(String.valueOf(this.tag));
                 response.addHeader(this.contactHeader);
                 transaction.sendResponse(response);
-                this.jTextArea.append("\n / SENT: " + response.getStatusCode() + " " + response.getReasonPhrase()+"\n");  
+                this.jTextArea.append("****************************************\nSENT 200 OK\n****************************************\n"+response.toString()+"\n");  
                 Set userSet = users.entrySet();
     			Iterator iterator = userSet.iterator();	
     			while(iterator.hasNext()) {
     		         Map.Entry me = (Map.Entry)iterator.next();
-    		         this.jTextArea.append("****************************************\nREGISTERED USER\n****************************************\n" +me.getKey()+":"+(String) me.getValue()+"\n");
+    		         this.jTextArea.append("****************************************\nREGISTERED USER\n****************************************\n" +me.getKey()+":"+(String) me.getValue()+"\n\n");
     			}
                
 
