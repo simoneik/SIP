@@ -106,6 +106,8 @@ public class SipClient extends JFrame implements SipListener {
         buttonBye.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 onBye(evt);
+                buttonBye.setEnabled(false);
+                buttonAccept.setEnabled(false);
             }
         });
 
@@ -358,6 +360,14 @@ public class SipClient extends JFrame implements SipListener {
 
     private void onBye(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_onBye
         // A method called when you click on the "Bye" button.
+    	try {
+            Request byeRequest = this.currentDialog.createRequest(Request.BYE);
+            ClientTransaction ct = sipProvider.getNewClientTransaction(byeRequest);
+            this.currentDialog.sendRequest(ct);
+         } catch (Exception ex) {
+             ex.printStackTrace();
+             System.exit(0);
+         }
     }//GEN-LAST:event_onBye
 
     /**
@@ -439,7 +449,7 @@ public class SipClient extends JFrame implements SipListener {
 		        transaction.sendResponse(response2);
 		        */
 		        //this.textArea.append(" / SENT " + response.getStatusCode() + " " + response.getReasonPhrase());
-		        this.textArea.append("\nSent response & lol: " + response.toString());
+		        this.textArea.append("\nSent response: " + response.toString());
 		        //MAKE AN ANSWER BUTTON BLINK AND CLICKABLE etc.
 		        buttonAccept.setEnabled(true);
 	        }
@@ -452,6 +462,7 @@ public class SipClient extends JFrame implements SipListener {
 		        this.textArea.append("\nSent response: (Accepted) " + response2.toString());      
 	        }
 	        else if(request.getMethod().equals("ACK")) {
+	        	buttonBye.setEnabled(true);
 	        	this.textArea.append("\nReceived final ACK: ");
 	        }
 	        
@@ -508,6 +519,7 @@ public class SipClient extends JFrame implements SipListener {
 					Request request = currentDialog.createAck(((CSeqHeader)response.getHeader("CSeq")).getSeqNumber());
 					currentDialog.sendAck(request);
 					this.textArea.append("\nSuccessfully established a DIALOG!");
+					buttonBye.setEnabled(true);
     			} catch (InvalidArgumentException e) {
 					e.printStackTrace();
 				} catch (SipException e) {
