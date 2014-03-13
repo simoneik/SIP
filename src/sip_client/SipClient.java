@@ -467,7 +467,8 @@ public class SipClient extends JFrame implements SipListener {
     			try {	//create an ACK request and send it
 					Request request = currentDialog.createAck(((CSeqHeader)response.getHeader("CSeq")).getSeqNumber());
 					currentDialog.sendAck(request);
-					this.textArea.append("****************************************\nDIALOG ESTABLISHED!\n****************************************\n");
+					this.textArea.append("****************************************\nRECEIVED RESPONSE - 200 OK - DIALOG ESTABLISHED!\n****************************************\n"+response.toString()+"\n\n");
+					this.textArea.append("****************************************\nACK SENT\n****************************************\n"+request.toString()+"\n");
 					buttonBye.setEnabled(true);
     			} catch (InvalidArgumentException e) {
 					e.printStackTrace();
