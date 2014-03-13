@@ -129,6 +129,7 @@ public class SipClient extends JFrame implements SipListener {
                 onBye(evt);
                 buttonBye.setEnabled(false);
                 buttonAccept.setEnabled(false);
+                textArea.append("****************************************\nYOU HUNG UP\n****************************************\n");
             }
         });
         
@@ -189,7 +190,7 @@ public class SipClient extends JFrame implements SipListener {
     	    this.contactHeader = this.headerFactory.createContactHeader(contactAddress);
 
     	    // Display the local IP address and port in the text area.
-    	    //this.textArea.append("Local address: " + this.ip + ":" + this.port + "\n");
+    	    this.textArea.append("****************************************\nLOCAL ADDRESS\n****************************************\n" + this.ip + ":" + this.port + "\n");
     	}
     	catch(Exception e) {
     	    // If an error occurs, display an error message box and exit.
@@ -394,7 +395,7 @@ public class SipClient extends JFrame implements SipListener {
 		        ((ToHeader)response2.getHeader("To")).setTag(String.valueOf(this.tag));
 		        response2.addHeader(this.contactHeader);
 		        getTransaction().sendResponse(response2);
-		        this.textArea.append("****************************************\nACCEPTED - RESPONSE SENT\n****************************************\n" + response2.toString() + "\n");
+		        this.textArea.append("****************************************\nACCEPTED, RESPONSE SENT - 200 OK\n****************************************\n" + response2.toString() + "\n");
 	        }
 	        else if(request.getMethod().equals("ACK")) {
 	        	buttonBye.setEnabled(true);
@@ -410,6 +411,7 @@ public class SipClient extends JFrame implements SipListener {
 		        ((ToHeader)response3.getHeader("To")).setTag(String.valueOf(this.tag));
 		        response3.addHeader(this.contactHeader);
 		        transaction.sendResponse(response3);
+		        this.textArea.append("****************************************\nYOUR CONVERSATION PARTNER HUNG UP\n****************************************\n");
 	        }
 	        
     	
@@ -453,6 +455,9 @@ public class SipClient extends JFrame implements SipListener {
     	}
     	else if (response.getStatusCode() == 180) {
     		this.textArea.append("****************************************\nRESPONSE RECEIVED - 180 RINGING\n****************************************\n" + response.toString() + "\n");    
+    	}
+    	else if(response.getStatusCode() == 100){
+    		 this.textArea.append("****************************************\nRESPONSE RECEIVED - 100 TRYING\n****************************************\n" + response.toString() + "\n");
     	}
     	//what to do when a 200 OK on invite is received  -> send ACK
     	else if (response.getStatusCode() == 200 && response.getHeader("CSeq").toString().contains("INVITE")) {
