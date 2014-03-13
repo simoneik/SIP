@@ -129,12 +129,7 @@ public class SipClient extends JFrame implements SipListener {
             }
         });
 
-<<<<<<< HEAD
         textField.setText("sip:simon@192.168.0.6:5060");
-=======
-        textField.setText("sip:kristoffer@192.168.0.6:5060");
->>>>>>> FETCH_HEAD
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
